@@ -7,8 +7,12 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("Salary.csv")
 df = df.dropna()
 
-mean_salary_by_education = df.groupby("Уровень образования")["Зарплата"].mean().reset_index()
+# Визуализируйте среднюю зарплату в Екатеринбурге по уровню образования для следующих возрастных промежутков: до 19, от 20 до 30, от 31 до 45, от 45 до 60, после 60. При каких условиях можно получать максимальную среднюю зарплату?
 
-max_mean_salary = mean_salary_by_education.loc[mean_salary_by_education["Зарплата"].idxmax()]
-                                           
-print(max_mean_salary)
+ekb = df[df["Регион"] == "Екатеринбург"]
+
+ekb_mean_salary = ekb.groupby("Уровень образования")["Зарплата"].mean()
+bins = [20, 30, 45, 60]
+
+plt.hist(ekb_mean_salary, bins=bins)
+plt.show()

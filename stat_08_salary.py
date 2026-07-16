@@ -25,6 +25,7 @@ print("\n----- Inspect categorical data for the impossible values: \n", df["По
 
 # print(df.dtypes, df.head(), df.tail(), df.shape)
 
+
 # Оцените качество выборки, опираясь на распределение данных по полу, по городам, по возрастам, по степени образования. В каких пропорциях присутствуют данные в выборке. Можно ли считать выборку репрезентативной?
  
 # Ask:
@@ -44,11 +45,13 @@ print('\n', df["Пол"].value_counts())
 print('\n',df["Регион"].value_counts())
 print('\n',df["Уровень образования"].value_counts())
 
+
 # Постройте плотность распределения для заработной платы для всех данных. Выведите описательные характеристики.
 
 fig, ax = plt.subplots()
 df.boxplot(column="Зарплата", ax=ax)
 plt.show()
+
 
 # Identify outliers like those shown in a boxplot
 
@@ -79,6 +82,7 @@ plt.show()
 
 print(df["Зарплата"].describe())
 
+
 # Найдите описательные характеристики для заработной платы с разбивкой по городам и оцените разницу между показателями.
 
 print(df.groupby("Регион").agg(
@@ -88,3 +92,49 @@ print(df.groupby("Регион").agg(
     max_salary = ("Зарплата", 'max'),
     )
 )
+
+
+# Определите моду для переменной «Опыт работы».
+
+print(df["Опыт работы"].mode())
+
+counts = df["Опыт работы"].value_counts()
+print(counts)
+print("Mode: ", counts.index[0])
+print("Frequency: ", counts.iloc[0])
+
+# Определите моду для переменной «Профессия» для городов: Москва, Санкт-Петербург, Омск и Казань.
+
+regions = {"Москва", "Санкт-Петербург", "Омск", "Казань"}
+filtered = df[df["Регион"].isin(regions)]
+
+print(filtered.groupby("Регион").agg(
+    work_experience_mode = ('Опыт работы', lambda x: x.mode())
+    )
+)
+
+
+# Определите для какого уровня образования средняя зарплата по всем регионам выше?
+
+mean_salary_by_education = df.groupby("Уровень образования")["Зарплата"].mean().reset_index()
+
+max_mean_salary = mean_salary_by_education.loc[mean_salary_by_education["Зарплата"].idxmax()]
+                                           
+print(mean_salary_by_education)
+print(max_mean_salary)
+
+
+# Как распределена средняя зарплата мужчин по профессиям?
+
+df_m = df[df["Пол"] == "мужской"]
+
+mean_salary_men = df_m.groupby("Профессия")["Зарплата"].mean()
+
+
+fig, ax = plt.subplots()
+
+ax.bar(mean_salary_men.index, mean_salary_men.values.flatten())
+ax.tick_params(axis='x', rotation=90)
+
+plt.show()
+
