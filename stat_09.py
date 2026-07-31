@@ -1,18 +1,38 @@
 import pandas as pd
 import numpy as np
-from scipy import stats
+from scipy.stats import binom, norm
 import matplotlib.pyplot as plt
+import math
 
+#  10.2 p321 Vaccine example
 
-df = pd.read_csv("Salary.csv")
-df = df.dropna()
+n = 100
+p = 0.25
+p_a = 0.5
+k = 36
 
-# Визуализируйте среднюю зарплату в Екатеринбурге по уровню образования для следующих возрастных промежутков: до 19, от 20 до 30, от 31 до 45, от 45 до 60, после 60. При каких условиях можно получать максимальную среднюю зарплату?
+print("Binomial: ")
+alpha = binom.sf(k, n, p)
+beta = binom.cdf(k, n, p_a)
 
-ekb = df[df["Регион"] == "Екатеринбург"]
+print("\tType I error probability: ", round(alpha, 6))
+print("\tType II error probability: ", round(beta, 6))
 
-ekb_mean_salary = ekb.groupby("Уровень образования")["Зарплата"].mean()
-bins = [20, 30, 45, 60]
+print("Normal approximation: ")
+mu = n*p
+sigma = math.sqrt(mu*(1 - p))
 
-plt.hist(ekb_mean_salary, bins=bins)
-plt.show()
+print("\tNull mu and sigma: ", mu, sigma)
+
+z = (36.5 - mu) / sigma
+alpha_norm = norm.sf(z)
+
+print("\tType I error probability: ", round(alpha_norm, 6))
+
+mu_a = n * p_a
+sigma_a = math.sqrt(mu_a * (1 - p_a))
+
+print("\tAlternative mu and sigma: ", mu_a, sigma_a)
+beta_norm = norm.cdf((36.5 - mu_a) / sigma_a)
+
+print("\tType II error probability: ", round(beta_norm, 6))
